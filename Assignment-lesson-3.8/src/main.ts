@@ -30,21 +30,36 @@ interface Album {
     title : string;
 }
 
-type PromisedCustomer = Promise<Customer[]>
-
-const apiURL = 'https://jsonplaceholder.typicode.com/users'
-
-const fetchUsers = async (url: string): PromisedCustomer => {
-  const response = await fetch(url).then(response => response.json());
-
-  return response.map((customer: CustomerItem): Customer => {
-            return {
-              id: customer.id,
-              name: customer.name,
-              street_address: `${customer.address.suite} ${customer.address.street}`,
-              company_name: customer.company.name
-            }
-        })
+const isCustomerItem = (variableToCheck: any): variableToCheck is CustomerItem => {  
+  return variableToCheck.company !== undefined;
 }
 
-fetchUsers(apiURL).then(users => console.log(users))
+type PromisedCustomer = Promise<Customer[] | Album[]>
+
+type PromisedCustomerData<T> = T extends Promise<Customer[] | Album[]> ? T : never;
+
+const userURL = 'https://jsonplaceholder.typicode.com/users'
+const albumURL = 'https://jsonplaceholder.typicode.com/albums/1/photos'
+
+const fetchData = async (url: string): PromisedCustomerData<PromisedCustomer> => {
+  const response = await fetch(url).then(response => response.json());
+
+  return response.map((info : CustomerItem | AlbumItem): Customer | Album => {
+     if (isCustomerItem(info)) {       
+      return {
+              id: info.id,
+              name: info.name,
+              street_address: `${info.address.suite} ${info.address.street}`,
+              company_name: info.company.name
+            }
+        } else {
+          return {
+            id: info.id,
+            title: info.title
+          }
+        }
+  })
+}
+
+fetchData(albumURL).then(albums => console.log(albums))
+fetchData(userURL).then(users => console.log(users))
