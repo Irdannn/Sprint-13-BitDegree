@@ -22,5 +22,4 @@ module.exports = {
       'arrow-spacing': 'error',
       'brace-style': 'error'
     }
-  }
-  
+  }  
