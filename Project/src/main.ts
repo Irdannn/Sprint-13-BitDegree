@@ -1,13 +1,14 @@
-const media : mediatype = []
+const librarybook : mediatype[] = []
 
-enum mediastatus {
-    out = "out",
-    in = "in",
+enum Status {
+    out,
+    in
 }
 
 type mediatype = {
-    title : string,
-    status : string
+    title : string;
+    status : Status;
+    type: string
 }
 
 interface book extends mediatype {
@@ -21,10 +22,48 @@ interface magazine extends mediatype {
     subject : string
 }
 
-const addMedia = (input : book) => {
-
+const addMedia = (media : mediatype) => {
+    librarybook.push(media)
 }
 
-const printTitlesIn = (input: book): string[] => {
-    
+const changeMediaStatus = (media: mediatype) => {
+    if(media.status == Status.in){
+      media.status = Status.out
+    } else {
+      media.status = Status.in
+    }
+  }
+
+const printTitlesIn = (library: mediatype[]): string[] => {
+    return library.filter((media)=> {
+        if (media.status== Status.in) {
+            return media
+        }
+    }).map((media) => {
+        return media.title
+    })
 }
+
+const harrypotter : book = {
+    date_published: new Date(),
+    author: 'JK Rowling',
+    genre: 'fiction',
+    title: 'Harry Potter',
+    status: Status.out,
+    type: 'Book' 
+}
+
+const vogue: magazine = {
+    issue_no: 1,
+    subject: 'fashion',
+    title: 'Vogue',
+    status: Status.in,
+    type: 'magazine'  
+  }
+
+addMedia(harrypotter);
+addMedia(vogue);
+
+console.log(printTitlesIn(librarybook))
+changeMediaStatus(harrypotter)
+console.log(printTitlesIn(librarybook))
